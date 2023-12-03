@@ -1,9 +1,9 @@
 # ESP32Garden
 
-#define 15 //  sensor de solo - analog
-#define 2  //  dht11 - analog
-#define 4  //  sensor de chuva - analog
+#define 15 //  sensor de
+#define 2  //  
+#define 4  //  
 
-#define 3 //  sensor de solo - digital
-#define 1  //  sensor de chuva - digital
+#define 3 //  sensor de 
+#define 1  //  sensor de 
 
