@@ -12,6 +12,7 @@ const char* mqtt_password = "your_mqtt_password";
 
 const int DHT_PIN = 5;
 const int LED_PIN = 2;  // GPIO 2 for the LED
+bool      ledBlink = false;
 const int SOIL_MOISTURE_PIN_1 = 36;
 const int SOIL_MOISTURE_PIN_2 = 39;
 const int SOIL_MOISTURE_PIN_3 = 34;
@@ -82,6 +83,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 }
 
+void blinkLED() {
+  digitalWrite(LED_PIN, HIGH);
+  delay(50);
+  digitalWrite(LED_PIN, LOW);
+}
+
+
 void reconnect() {
   while (!client.connected()) {
     Serial.println("Reconnect: Attempting MQTT connection...");
@@ -122,6 +130,7 @@ void reconnect() {
 void publishSensorData(const char* sensorName, int sensorValue) {
   String topic = "lcabs1993/ESP32/" + String(sensorName);
   client.publish(topic.c_str(), String(sensorValue).c_str());
+  blinkLED();
 }
 
 void setup() {
@@ -158,6 +167,7 @@ void setup() {
 
   Serial.println("Setup: Completed.");
 }
+
 
 void loop() {
   if (!client.connected()) {
