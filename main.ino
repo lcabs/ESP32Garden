@@ -119,9 +119,9 @@ void reconnect() {
   }
 }
 
-void publishSensorData(const char* sensorName, const String& sensorValue) {
+void publishSensorData(const char* sensorName, int sensorValue) {
   String topic = "lcabs1993/ESP32/" + String(sensorName);
-  client.publish(topic.c_str(), sensorValue.c_str());
+  client.publish(topic.c_str(), String(sensorValue).c_str());
 }
 
 void setup() {
@@ -168,10 +168,15 @@ void loop() {
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
 
-  if (!isnan(temperature) && !isnan(humidity)) {
-    publishSensorData("DHT11/temp", String(temperature));
-    publishSensorData("DHT11/humi", String(humidity));
+ if (!isnan(temperature) && !isnan(humidity) && static_cast<int>(temperature) != lastTemperature) {
+    lastTemperature = static_cast<int>(temperature);
+    publishSensorData("DHT11/temp", lastTemperature);
   }
+ if (!isnan(temperature) && !isnan(humidity) && static_cast<int>(humidity) != lastHumidity) {
+    lastHumidity = static_cast<int>(humidity);
+    publishSensorData("DHT11/humi", lastHumidity);
+  }
+
 
   // Read sensor values and publish to specific MQTT topics
   int soilMoisture1 = analogRead(SOIL_MOISTURE_PIN_1);
@@ -179,16 +184,38 @@ void loop() {
   int soilMoisture3 = analogRead(SOIL_MOISTURE_PIN_3);
   int soilMoisture4 = analogRead(SOIL_MOISTURE_PIN_4);
 
-  publishSensorData("solo1", String(soilMoisture1));
-  publishSensorData("solo2", String(soilMoisture2));
-  publishSensorData("solo3", String(soilMoisture3));
-  publishSensorData("solo4", String(soilMoisture4));
+  if (soilMoisture1 != lastSoilMoisture1) {
+    lastSoilMoisture1 = soilMoisture1;
+    publishSensorData("solo1", lastSoilMoisture1);
+  }
+
+  if (soilMoisture2 != lastSoilMoisture2) {
+    lastSoilMoisture2 = soilMoisture2;
+    publishSensorData("solo2", lastSoilMoisture2);
+  }
+
+  if (soilMoisture3 != lastSoilMoisture3) {
+    lastSoilMoisture3 = soilMoisture3;
+    publishSensorData("solo3", lastSoilMoisture3);
+  }
+
+  if (soilMoisture4 != lastSoilMoisture4) {
+    lastSoilMoisture4 = soilMoisture4;
+    publishSensorData("solo4", lastSoilMoisture4);
+  }
 
   int rainSensor1 = digitalRead(RAIN_SENSOR_PIN_1);
   int rainSensor2 = digitalRead(RAIN_SENSOR_PIN_2);
 
-  publishSensorData("chuva1", String(rainSensor1));
-  publishSensorData("chuva2", String(rainSensor2));
+  if (rainSensor1 != lastRainSensor1) {
+    lastRainSensor1 = rainSensor1;
+    publishSensorData("chuva1", lastRainSensor1);
+  }
+
+  if (rainSensor2 != lastRainSensor2) {
+    lastRainSensor2 = rainSensor2;
+    publishSensorData("chuva2", lastRainSensor2);
+  }
 
   delay(50);  // Reduced delay to 50 milliseconds
 }
